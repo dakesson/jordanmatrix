@@ -11,7 +11,7 @@ for i=1:length(ev) %Loop over eigenvalues
     %Initialize
     ri = []; pi = []; bi = []; ni = [];
     while length(ri) < 2 | pi(end) ~= pi(end-1) %Compute table
-        ri(j) = rank((A - ev(i)*eye(length(A)))^j);
+        ri(j) = rank((A - ev(i)*eye(length(A)))^j,tol);
         pi(j) = length(A) - ri(j);
         
         if j == 1
@@ -28,13 +28,20 @@ for i=1:length(ev) %Loop over eigenvalues
     end
     ni(j) = 0;
     
-    positions = find(ni == 1)
+    nValues = unique(ni);
     
-    for k=1:length(positions)
-        n = positions(k);
-        jordan(progress:progress+n-1,progress:progress+n-1) = jordanblock(ev(i), n)
-        progress = progress + n;
+    for l=1:length(nValues)
+        
+        positions = find(ni == nValues(l))
+
+        for m=1:nValues(l)
+            for k=1:length(positions)
+                n = positions(k);
+                jordan(progress:progress+n-1,progress:progress+n-1) = jordanblock(ev(i), n)
+                progress = progress + n;
+            end
+        end
     end
     
-    J = jordan
+    J = jordan;
 end
